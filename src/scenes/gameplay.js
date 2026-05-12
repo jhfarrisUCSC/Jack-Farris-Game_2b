@@ -91,8 +91,8 @@ class Gameplay extends Phaser.Scene {
     let my = this.my;
 
     // map
-    this.map = this.add.tilemap("map", 16, 16, 7, 12);
-    this.tileset = this.map.addTilesetImage("Tile Layer 1", "tileSprites");
+    this.map = this.add.tilemap("map");
+    this.tileset = this.map.addTilesetImage("ShooterMap", "tileSprites");
     this.backgroundMap = this.map.createLayer("Tile Layer 1", this.tileset, 0, 0);
     this.backgroundMap.setScale(2.0);
 
@@ -123,7 +123,7 @@ class Gameplay extends Phaser.Scene {
       this.enemyRow = Math.ceil(Math.random() * 4);
       switch(this.enemyRow) {
         case 1:
-          for (let j = 0; j < 7; i++){
+          for (let j = 0; j < 7; j++){
             // Add Green
           }
           break;

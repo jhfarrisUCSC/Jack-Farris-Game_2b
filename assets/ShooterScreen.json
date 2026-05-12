@@ -33,8 +33,23 @@
  "tileheight":16,
  "tilesets":[
         {
+         "columns":12,
          "firstgid":1,
-         "source":"ShooterMap.tsx"
+         "grid":
+            {
+             "height":32,
+             "orientation":"orthogonal",
+             "width":32
+            },
+         "image":"./assets/tiles_packed.png",
+         "imageheight":160,
+         "imagewidth":192,
+         "margin":0,
+         "name":"ShooterMap",
+         "spacing":0,
+         "tilecount":120,
+         "tileheight":16,
+         "tilewidth":16
         }],
  "tilewidth":16,
  "type":"map",

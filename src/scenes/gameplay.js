@@ -1,11 +1,11 @@
 const playerTypes = {
   tank: {
-    health: 25,
-    speed: 1,
+    health: 20,
+    speed: 32,
     damage: 1
   },
   fort: {
-    health: 15,
+    health: 15
   }
 };
 
@@ -17,25 +17,20 @@ const enemyTypes = {
   },
   red1: {
     texture: 'red1.png',
-    health: 3,
+    health: 2,
     speed: 2,
-    start: [0,0],
-    end: [0,0]
   },
   blue1: {
     texture: 'blue1.png',
-    health: 3,
+    health: 4,
     speed: 2,
-    start: [0,0],
-    middle: [0,0],
-    end: [0,0]
+    damage: 2,
   },
   yellow1: {
     texture: 'yellow1.png',
     health: 3,
+    speed: 4,
     damage: 2,
-    start: [0,0],
-    end: [0,0]
   }
 };
 
@@ -81,7 +76,7 @@ class Gameplay extends Phaser.Scene {
     this.load.image("enemyShot", "enemyShot.png");
     this.load.image("barrier", "building.png");
     this.load.image("upgradesPanel", "UpgradesPanel.png");
-
+    this.load.image("gameover", "gameover.png");
   }
 
   create() {
@@ -114,17 +109,22 @@ class Gameplay extends Phaser.Scene {
       }
     })
 
+    my.sprite.upgrade = this.add.sprite(112, 192, "gameover");
+    my.sprite.upgrade.setScale(0.25);
+    my.sprite.upgrade.visible = false;
+
     // Upgrades
     this.qKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
     this.wKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
     this.eKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
     my.sprite.upgrade = this.add.sprite(112, 192, "upgradesPanel");
+    my.sprite.upgrade.setScale(0.25);
     my.sprite.upgrade.visible = false;
 
     // waves
     this.startWave();
 
-    // upgrades
+    // upgrades menu
 
     this.qKey.on('down', () => {
       if (this.upgrade == true) {
@@ -149,6 +149,11 @@ class Gameplay extends Phaser.Scene {
         this.upgrade = false;
         this.startWave()
       }
+    })
+
+    this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+    this.escKey.on('down', () => {
+      this.scene.restart();
     })
 
     
@@ -198,13 +203,39 @@ class Gameplay extends Phaser.Scene {
     // wave clear
     if (this.totalEnemies == 0) {
       this.upgrade = true;
-      my.sprite.upgrade.visible = false;
+      my.sprite.upgrade.visible = true;
     }
 
     // counter
     if (this.upgrade == false) {
-      this.counter++;
+      this.counter += delta;
     }
+
+    if (this.counter >= 10000) {
+      for (let enemy of this.enemies) {
+        enemy.sprite.y += 32;
+      }
+      this.counter = 0;
+    }
+
+    for (let enemy of this.enemies) {
+      if ((enemy.type == 'red1') || (enemy.type == 'yellow1')) {
+        enemy.sprite.x += enemy.speed * enemy.direction;
+      if (enemy.sprite.x >= 208) {
+        enemy.direction = -1;
+      }
+      if (enemy.sprite.x <= 16) {
+        enemy.direction = 1;
+      }
+    }
+  }
+  for (let enemy of this.enemies) {
+      if ((enemy.sprite.y == this.body.y)) {
+        this.upgrade = true;
+        my.sprite.upgrade.visible = false;
+        my.sprite.gameover.visible = true;
+    }
+  }
 
   }
 startWave() {
@@ -219,7 +250,7 @@ startWave() {
             // Add green1
             let enemy = this.add.sprite(32 * j + 16, 32 * i + 16, "planeSprites", "green1.png");
             enemy.flipY = true;
-            this.enemies.push({sprite: enemy, type: 'green1', health: enemyTypes.green1.health});
+            this.enemies.push({sprite: enemy, type: 'green1', damage: 2, health: enemyTypes.green1.health});
             this.totalEnemies++;
           }
           break;
@@ -228,7 +259,7 @@ startWave() {
             // Add red
             let enemy = this.add.sprite(32 * j + 16, 32 * i + 16, "planeSprites", 'red1.png');
             enemy.flipY = true;
-            this.enemies.push({sprite: enemy, type: 'red1', health: enemyTypes.red1.health});
+            this.enemies.push({sprite: enemy, type: 'red1', speed: 2, direction: 1, health: enemyTypes.red1.health});
             this.totalEnemies++;
           }
           break;
@@ -237,7 +268,7 @@ startWave() {
             // Add blue
             let enemy = this.add.sprite(32 * j + 16, 32 * i + 16, "planeSprites", 'blue1.png');
             enemy.flipY = true;
-            this.enemies.push({sprite: enemy, type: 'blue1', health: enemyTypes.blue1.health});
+            this.enemies.push({sprite: enemy, type: 'blue1', speed: 2, damage: 2, health: enemyTypes.blue1.health});
             this.totalEnemies++;
           }
           break;
@@ -246,8 +277,9 @@ startWave() {
             // Add yellow
             let enemy = this.add.sprite(32 * j + 16, 32 * i + 16, "planeSprites", 'yellow1.png');
             enemy.flipY = true;
-            this.enemies.push({sprite: enemy, type: 'yellow1', health: enemyTypes.yellow1.health});
+            this.enemies.push({sprite: enemy, type: 'yellow1', speed: 2, direction: 1, health: enemyTypes.yellow1.health});
             this.totalEnemies++;
+            this.enemyFire = true;
           }
           break;
       }

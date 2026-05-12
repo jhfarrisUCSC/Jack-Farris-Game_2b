@@ -1,7 +1,7 @@
 const playerTypes = {
   tank: {
     health: 25,
-    speed: 1 * delta * 0.1,
+    speed: 1,
     damage: 1
   },
   fort: {
@@ -18,14 +18,14 @@ const enemyTypes = {
   red1: {
     texture: 'red1.png',
     health: 3,
-    speed: 2 * delta * 0.1,
+    speed: 2,
     start: [0,0],
     end: [0,0]
   },
   blue1: {
     texture: 'blue1.png',
     health: 3,
-    speed: 2 * delta * 0.1,
+    speed: 2,
     start: [0,0],
     middle: [0,0],
     end: [0,0]
@@ -121,8 +121,13 @@ class Gameplay extends Phaser.Scene {
     my.sprite.upgrade = this.add.sprite(112, 192, "upgradesPanel");
     my.sprite.upgrade.visible = false;
 
+    // waves
+    this.startWave();
+
+    // upgrades
+
     this.qKey.on('down', () => {
-      if (this.upgrade = true) {
+      if (this.upgrade == true) {
         playerTypes.tank.damage++;
         my.sprite.upgrade.visible = false;
         this.upgrade = false;
@@ -130,7 +135,7 @@ class Gameplay extends Phaser.Scene {
       }
     })
     this.wKey.on('down', () => {
-      if (this.upgrade = true) {
+      if (this.upgrade == true) {
         playerTypes.tank.speed++;
         my.sprite.upgrade.visible = false;
         this.upgrade = false;
@@ -138,16 +143,13 @@ class Gameplay extends Phaser.Scene {
       }
     })
     this.eKey.on('down', () => {
-      if (this.upgrade = true) {
-        playerTypes.tank.heath = playerTypes.tank.heath + 5;
+      if (this.upgrade == true) {
+        playerTypes.tank.health = playerTypes.tank.health + 5;
         my.sprite.upgrade.visible = false;
         this.upgrade = false;
         this.startWave()
       }
     })
-
-    // waves
-    this.startWave();
 
     
   }
@@ -159,13 +161,13 @@ class Gameplay extends Phaser.Scene {
     let dt = delta / 1000;
     
     if (this.aKey.isDown && (my.sprite.body.x > 16)) {
-    this.bodyX -= playerTypes.tank.speed;
+    this.bodyX -= playerTypes.tank.speed * dt;
     }
     if (this.dKey.isDown && (my.sprite.body.x < 208)) {
-      this.bodyX += playerTypes.tank.speed;
+      this.bodyX += playerTypes.tank.speed * dt;
     }
     my.sprite.body.x = this.bodyX;
-    if (this.attacking === true) {
+    if (this.attacking == true) {
       this.attackY -= 4;
     }
     my.sprite.attack.y = this.attackY;
@@ -195,7 +197,7 @@ class Gameplay extends Phaser.Scene {
 
     // wave clear
     if (this.totalEnemies == 0) {
-      this.upgrade == true;
+      this.upgrade = true;
       my.sprite.upgrade.visible = false;
     }
 

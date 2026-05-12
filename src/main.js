@@ -15,10 +15,11 @@
 // game config
 let config = {
     parent: 'phaser-game',
-    type: Phaser.AUTO,
+    type: Phaser.CANVAS,
     render: {
         pixelArt: true  // prevent pixel art from getting blurred when scaled
     },
+    fps: { forceSetTimeOut: true, target: 60 },
     width: 224,
     height: 384,
     scene: [Gameplay]

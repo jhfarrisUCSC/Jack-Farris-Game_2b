@@ -1,7 +1,7 @@
 const playerTypes = {
   tank: {
     health: 25,
-    speed: 1,
+    speed: 1 * delta * 0.1,
     damage: 1
   },
   fort: {
@@ -18,14 +18,14 @@ const enemyTypes = {
   red1: {
     texture: 'red1.png',
     health: 3,
-    speed: 2,
+    speed: 2 * delta * 0.1,
     start: [0,0],
     end: [0,0]
   },
   blue1: {
     texture: 'blue1.png',
     health: 3,
-    speed: 2,
+    speed: 2 * delta * 0.1,
     start: [0,0],
     middle: [0,0],
     end: [0,0]
@@ -34,60 +34,6 @@ const enemyTypes = {
     texture: 'yellow1.png',
     health: 3,
     damage: 2,
-    start: [0,0],
-    end: [0,0]
-  },
-  green2: {
-    texture: 'green2.png',
-    health: 6,
-    damage: 4,
-  },
-  red2: {
-    texture: 'red2.png',
-    health: 6,
-    speed: 4,
-    start: [0,0],
-    end: [0,0]
-  },
-  blue2: {
-    texture: 'blue2.png',
-    health: 6,
-    speed: 4,
-    start: [0,0],
-    middle: [0,0],
-    end: [0,0]
-  },
-  yellow2: {
-    texture: 'yellow2.png',
-    health: 6,
-    damage: 4,
-    start: [0,0],
-    end: [0,0]
-  },
-  green3: {
-    texture: 'green3.png',
-    health: 12,
-    damage: 8,
-  },
-  red3: {
-    texture: 'red3.png',
-    health: 12,
-    speed: 8,
-    start: [0,0],
-    end: [0,0]
-  },
-  blue3: {
-    texture: 'blue3.png',
-    health: 12,
-    speed: 8,
-    start: [0,0],
-    middle: [0,0],
-    end: [0,0]
-  },
-  yellow3: {
-    texture: 'yellow3.png',
-    health: 12,
-    damage: 8,
     start: [0,0],
     end: [0,0]
   }
@@ -115,6 +61,7 @@ class Gameplay extends Phaser.Scene {
     this.enemyRow = 0;
     this.enemies = [];
     this.totalEnemies = 1;
+    this.upgrade = false;
   }
 
   preload() {
@@ -133,6 +80,7 @@ class Gameplay extends Phaser.Scene {
     this.load.image("playerShot", "playerShot.png");
     this.load.image("enemyShot", "enemyShot.png");
     this.load.image("barrier", "building.png");
+    this.load.image("upgradesPanel", "UpgradesPanel.png");
 
   }
 
@@ -166,16 +114,50 @@ class Gameplay extends Phaser.Scene {
       }
     })
 
+    // Upgrades
+    this.qKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+    this.wKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+    this.eKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+    my.sprite.upgrade = this.add.sprite(112, 192, "upgradesPanel");
+    my.sprite.upgrade.visible = false;
+
+    this.qKey.on('down', () => {
+      if (this.upgrade = true) {
+        playerTypes.tank.damage++;
+        my.sprite.upgrade.visible = false;
+        this.upgrade = false;
+        this.startWave()
+      }
+    })
+    this.wKey.on('down', () => {
+      if (this.upgrade = true) {
+        playerTypes.tank.speed++;
+        my.sprite.upgrade.visible = false;
+        this.upgrade = false;
+        this.startWave()
+      }
+    })
+    this.eKey.on('down', () => {
+      if (this.upgrade = true) {
+        playerTypes.tank.heath = playerTypes.tank.heath + 5;
+        my.sprite.upgrade.visible = false;
+        this.upgrade = false;
+        this.startWave()
+      }
+    })
+
     // waves
     this.startWave();
 
-    // enemy shenanigans
+    
   }
 
-  update() {
+  update(time, delta) {
 
     // tank controls
     let my = this.my;
+    let dt = delta / 1000;
+    
     if (this.aKey.isDown && (my.sprite.body.x > 16)) {
     this.bodyX -= playerTypes.tank.speed;
     }
@@ -195,13 +177,16 @@ class Gameplay extends Phaser.Scene {
 
     // attacking
     if (this.attacking) {
-      for (let target of this.enemies) {
-        if (this.collides(my.sprite.attack, target.sprite)) {
-          target.health = target.health - playerTypes.tank.damage;
+      for (let i = this.enemies.length - 1; i >= 0; i--) {
+      let target = this.enemies[i];
+      if (this.collides(my.sprite.attack, target.sprite)) {
+          target.health -= playerTypes.tank.damage;
           this.attacking = false;
+          my.sprite.attack.visible = false;
+          this.attackY = this.bodyY;
           if (target.health <= 0) {
             target.sprite.destroy();
-            this.enemies = this.enemies.filter(e => e !== target);
+            this.enemies.splice(i, 1);
             this.totalEnemies--;
           }
         }
@@ -210,15 +195,19 @@ class Gameplay extends Phaser.Scene {
 
     // wave clear
     if (this.totalEnemies == 0) {
-      // Pop up buttons (Damage Increase, Speed Increase, Building)
+      this.upgrade == true;
+      my.sprite.upgrade.visible = false;
     }
 
     // counter
-    this.counter++;
+    if (this.upgrade == false) {
+      this.counter++;
+    }
 
   }
 startWave() {
-    this.totalEnemies = 1
+    this.enemies = [];
+    this.totalEnemies = 0;
     this.totalRows = Math.ceil(Math.random() * 5);
     for (let i = 0; i < this.totalRows; i++){
       let enemyRow = Math.ceil(Math.random() * 4);
@@ -261,7 +250,10 @@ startWave() {
           break;
       }
     }
-    this.totalEnemies--;
   }
-  
+  collides(a, b) {
+        if (Math.abs(a.x - b.x) > (a.displayWidth/2 + b.displayWidth/2)) return false;
+        if (Math.abs(a.y - b.y) > (a.displayHeight/2 + b.displayHeight/2)) return false;
+        return true;
+    }
 }

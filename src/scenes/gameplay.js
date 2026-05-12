@@ -1,46 +1,93 @@
 const playerTypes = {
   tank: {
-    texture: '',
-    health: 50,
-    speed: 5,
+    health: 25,
+    speed: 1,
     damage: 1
   },
   fort: {
-    texture: '',
-    health: 50,
-    type: ''
+    health: 15,
   }
 };
 
 const enemyTypes = {
-  green: {
-    type: "basic",
-    texture: '',
-    health: 1,
-    level: 1,
+  green1: {
+    texture: 'green1.png',
+    health: 3,
+    damage: 2,
   },
-  red: {
-    type: "move",
-    texture: '',
-    health: 1,
-    level: 1,
+  red1: {
+    texture: 'red1.png',
+    health: 3,
+    speed: 2,
     start: [0,0],
     end: [0,0]
   },
-  blue: {
-    type: "dive",
-    texture: '',
-    health: 1,
-    level: 1,
+  blue1: {
+    texture: 'blue1.png',
+    health: 3,
+    speed: 2,
     start: [0,0],
     middle: [0,0],
     end: [0,0]
   },
-  yellow: {
-    type: "fighter",
-    texture: '',
-    health: 1,
-    level: 1,
+  yellow1: {
+    texture: 'yellow1.png',
+    health: 3,
+    damage: 2,
+    start: [0,0],
+    end: [0,0]
+  },
+  green2: {
+    texture: 'green2.png',
+    health: 6,
+    damage: 4,
+  },
+  red2: {
+    texture: 'red2.png',
+    health: 6,
+    speed: 4,
+    start: [0,0],
+    end: [0,0]
+  },
+  blue2: {
+    texture: 'blue2.png',
+    health: 6,
+    speed: 4,
+    start: [0,0],
+    middle: [0,0],
+    end: [0,0]
+  },
+  yellow2: {
+    texture: 'yellow2.png',
+    health: 6,
+    damage: 4,
+    start: [0,0],
+    end: [0,0]
+  },
+  green3: {
+    texture: 'green3.png',
+    health: 12,
+    damage: 8,
+  },
+  red3: {
+    texture: 'red3.png',
+    health: 12,
+    speed: 8,
+    start: [0,0],
+    end: [0,0]
+  },
+  blue3: {
+    texture: 'blue3.png',
+    health: 12,
+    speed: 8,
+    start: [0,0],
+    middle: [0,0],
+    end: [0,0]
+  },
+  yellow3: {
+    texture: 'yellow3.png',
+    health: 12,
+    damage: 8,
     start: [0,0],
     end: [0,0]
   }
@@ -53,8 +100,8 @@ class Gameplay extends Phaser.Scene {
     this.my = {sprite: {}};
 
     //player stuff
-    this.bodyX = 48;
-    this.bodyY = 96;
+    this.bodyX = 96;
+    this.bodyY = 336;
     this.attacking = false;
     this.attackX = 48;
     this.attackY = 96;
@@ -66,6 +113,8 @@ class Gameplay extends Phaser.Scene {
     this.totalRows = 0;
     this.enemyLevel = 0;
     this.enemyRow = 0;
+    this.enemies = [];
+    this.totalEnemies = 1;
   }
 
   preload() {
@@ -73,7 +122,7 @@ class Gameplay extends Phaser.Scene {
 
     // Load Tiles
     this.load.image("tileSprites", "tiles_packed.png");
-    this.load.tilemapTiledJSON("map", "tiles_packed.json");
+    this.load.tilemapTiledJSON("map", "ShooterScreen.json");
 
     // Load enemies
     this.load.atlasXML("planeSprites", "ships_packed.png", "ships_packed.xml");
@@ -102,6 +151,7 @@ class Gameplay extends Phaser.Scene {
     this.aKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.dKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     my.sprite.body = this.add.sprite(this.bodyX, this.bodyY, "tank");
+    my.sprite.body.flipY = true;
     my.sprite.attack = this.add.sprite(this.bodyX, this.bodyY, "playerShot");
     my.sprite.attack.visible = false;
 
@@ -117,33 +167,7 @@ class Gameplay extends Phaser.Scene {
     })
 
     // waves
-    this.totalRows = Math.ceil(Math.random() * 5);
-    for (let i = 0; i < this.totalRows; i++){
-      this.enemyLevel = Math.ceil(Math.random() * 3);
-      this.enemyRow = Math.ceil(Math.random() * 4);
-      switch(this.enemyRow) {
-        case 1:
-          for (let j = 0; j < 7; j++){
-            // Add Green
-          }
-          break;
-          case 2:
-          for (let j = 0; j < 4; j++){
-            // Add red
-          }
-          break;
-          case 3:
-          for (let j = 0; j < 7; j++){
-            // Add blue
-          }
-          break;
-          case 4:
-          for (let j = 0; j < 3; j++){
-            // Add yellow
-          }
-          break;
-      }
-    }
+    this.startWave();
 
     // enemy shenanigans
   }
@@ -152,15 +176,15 @@ class Gameplay extends Phaser.Scene {
 
     // tank controls
     let my = this.my;
-    if (this.aKey.isDown && (my.sprite.body.x > 0)) {
-    this.bodyX -=1;
+    if (this.aKey.isDown && (my.sprite.body.x > 16)) {
+    this.bodyX -= playerTypes.tank.speed;
     }
-    if (this.dKey.isDown && (my.sprite.body.x < 96)) {
-      this.bodyX +=1;
+    if (this.dKey.isDown && (my.sprite.body.x < 208)) {
+      this.bodyX += playerTypes.tank.speed;
     }
     my.sprite.body.x = this.bodyX;
     if (this.attacking === true) {
-      this.attackY -= 8;
+      this.attackY -= 4;
     }
     my.sprite.attack.y = this.attackY;
     if (my.sprite.attack.y <= 0) {
@@ -169,8 +193,75 @@ class Gameplay extends Phaser.Scene {
       this.attacking = false;
     }
 
+    // attacking
+    if (this.attacking) {
+      for (let target of this.enemies) {
+        if (this.collides(my.sprite.attack, target.sprite)) {
+          target.health = target.health - playerTypes.tank.damage;
+          this.attacking = false;
+          if (target.health <= 0) {
+            target.sprite.destroy();
+            this.enemies = this.enemies.filter(e => e !== target);
+            this.totalEnemies--;
+          }
+        }
+      }
+    }
+
+    // wave clear
+    if (this.totalEnemies == 0) {
+      // Pop up buttons (Damage Increase, Speed Increase, Building)
+    }
+
     // counter
     this.counter++;
 
   }
+startWave() {
+    this.totalEnemies = 1
+    this.totalRows = Math.ceil(Math.random() * 5);
+    for (let i = 0; i < this.totalRows; i++){
+      let enemyRow = Math.ceil(Math.random() * 4);
+      switch(enemyRow) {
+        case 1:
+          for (let j = 0; j < 7; j++){
+            // Add green1
+            let enemy = this.add.sprite(32 * j + 16, 32 * i + 16, "planeSprites", "green1.png");
+            enemy.flipY = true;
+            this.enemies.push({sprite: enemy, type: 'green1', health: enemyTypes.green1.health});
+            this.totalEnemies++;
+          }
+          break;
+          case 2:
+          for (let j = 0; j < 4; j++){
+            // Add red
+            let enemy = this.add.sprite(32 * j + 16, 32 * i + 16, "planeSprites", 'red1.png');
+            enemy.flipY = true;
+            this.enemies.push({sprite: enemy, type: 'red1', health: enemyTypes.red1.health});
+            this.totalEnemies++;
+          }
+          break;
+          case 3:
+          for (let j = 0; j < 7; j++){
+            // Add blue
+            let enemy = this.add.sprite(32 * j + 16, 32 * i + 16, "planeSprites", 'blue1.png');
+            enemy.flipY = true;
+            this.enemies.push({sprite: enemy, type: 'blue1', health: enemyTypes.blue1.health});
+            this.totalEnemies++;
+          }
+          break;
+          case 4:
+          for (let j = 0; j < 3; j++){
+            // Add yellow
+            let enemy = this.add.sprite(32 * j + 16, 32 * i + 16, "planeSprites", 'yellow1.png');
+            enemy.flipY = true;
+            this.enemies.push({sprite: enemy, type: 'yellow1', health: enemyTypes.yellow1.health});
+            this.totalEnemies++;
+          }
+          break;
+      }
+    }
+    this.totalEnemies--;
+  }
+  
 }

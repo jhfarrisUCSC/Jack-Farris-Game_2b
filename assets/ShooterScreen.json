@@ -41,7 +41,7 @@
              "orientation":"orthogonal",
              "width":32
             },
-         "image":"./assets/tiles_packed.png",
+         "image":"..\/Downloads\/kenney_pixel-shmup\/Tilemap\/tiles_packed.png",
          "imageheight":160,
          "imagewidth":192,
          "margin":0,

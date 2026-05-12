@@ -106,7 +106,7 @@ class Gameplay extends Phaser.Scene {
     my.sprite.attack.visible = false;
 
     this.spaceKey.on('down', () => {
-      if (this.attacking == false) {
+      if (this.attacking === false) {
         this.attackX = this.bodyX;
         this.attackY = this.bodyY;
         my.sprite.attack.x = this.attackX;
@@ -121,24 +121,24 @@ class Gameplay extends Phaser.Scene {
     for (let i = 0; i < this.totalRows; i++){
       this.enemyLevel = Math.ceil(Math.random() * 3);
       this.enemyRow = Math.ceil(Math.random() * 4);
-      switch(enemyRow) {
+      switch(this.enemyRow) {
         case 1:
           for (let j = 0; j < 7; i++){
             // Add Green
           }
           break;
           case 2:
-          for (let j = 0; j < 4; i++){
+          for (let j = 0; j < 4; j++){
             // Add red
           }
           break;
           case 3:
-          for (let j = 0; j < 7; i++){
+          for (let j = 0; j < 7; j++){
             // Add blue
           }
           break;
           case 4:
-          for (let j = 0; j < 3; i++){
+          for (let j = 0; j < 3; j++){
             // Add yellow
           }
           break;
@@ -159,12 +159,13 @@ class Gameplay extends Phaser.Scene {
       this.bodyX +=1;
     }
     my.sprite.body.x = this.bodyX;
-    if (this.attacking == true) {
+    if (this.attacking === true) {
       this.attackY -= 8;
     }
     my.sprite.attack.y = this.attackY;
     if (my.sprite.attack.y <= 0) {
       my.sprite.attack.visible = false;
+      this.attackY = this.bodyY;
       this.attacking = false;
     }
 

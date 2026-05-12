@@ -15,18 +15,13 @@
 // game config
 let config = {
     parent: 'phaser-game',
-    type: Phaser.CANVAS,
+    type: Phaser.AUTO,
     render: {
         pixelArt: true  // prevent pixel art from getting blurred when scaled
     },
     width: 224,
     height: 384,
-    scene: [gameplay]
+    scene: [Gameplay]
 }
-
-// A convenience object that contains all sprites
-// To use: my.sprite.sprite_name
-// Where sprite_name is the name of a specific sprite.
-let my = {sprite: {}};
 
 const game = new Phaser.Game(config);

@@ -1,0 +1,14 @@
+<TextureAtlas imagePath="ships_packed.png">
+	<SubTexture name="blue3.png" x="0" y="0" width="32" height="32"/>
+	<SubTexture name="red3.png" x="32" y="0" width="32" height="32"/>
+	<SubTexture name="green3.png" x="64" y="0" width="32" height="32"/>
+	<SubTexture name="yellow3.png" x="96" y="0" width="32" height="32"/>
+	<SubTexture name="blue2.png" x="0" y="32" width="32" height="32"/>
+	<SubTexture name="red2.png" x="32" y="32" width="32" height="32"/>
+	<SubTexture name="green2.png" x="64" y="32" width="32" height="32"/>
+	<SubTexture name="yellow2.png" x="96" y="32" width="32" height="32"/>
+	<SubTexture name="blue1.png" x="0" y="64" width="32" height="32"/>
+	<SubTexture name="red1.png" x="32" y="64" width="32" height="32"/>
+	<SubTexture name="green1.png" x="64" y="64" width="32" height="32"/>
+	<SubTexture name="yellow1.png" x="96" y="64" width="32" height="32"/>
+</TextureAtlas>

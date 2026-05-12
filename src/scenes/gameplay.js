@@ -53,11 +53,11 @@ class Gameplay extends Phaser.Scene {
     this.my = {sprite: {}};
 
     //player stuff
-    this.bodyX = 300;
-    this.bodyY = 500;
+    this.bodyX = 48;
+    this.bodyY = 96;
     this.attacking = false;
-    this.attackX = 500;
-    this.attackY = 300;
+    this.attackX = 48;
+    this.attackY = 96;
 
     // waves
     this.counter = 0;
@@ -72,24 +72,37 @@ class Gameplay extends Phaser.Scene {
     this.load.setPath("./assets/");
 
     // Load Tiles
-    this.load.atlasXML("tileSprites", "tiles_packed.png", "tiles_packed.xml");
+    this.load.image("tileSprites", "tiles_packed.png");
+    this.load.tilemapTiledJSON("map", "tiles_packed.json");
 
-    // Load character
+    // Load enemies
     this.load.atlasXML("planeSprites", "ships_packed.png", "ships_packed.xml");
-
     document.getElementById('description').innerHTML= '<h2>gameplayScene.js</h2>'
+
+    // Load excess sprites
+    this.load.image("tank", "tank.png");
+    this.load.image("playerShot", "playerShot.png");
+    this.load.image("enemyShot", "enemyShot.png");
+    this.load.image("barrier", "building.png");
+
   }
 
   create() {
     let my = this.my;
+
+    // map
+    this.map = this.add.tilemap("map", 16, 16, 7, 12);
+    this.tileset = this.map.addTilesetImage("Tile Layer 1", "tileSprites");
+    this.backgroundMap = this.map.createLayer("Tile Layer 1", this.tileset, 0, 0);
+    this.backgroundMap.setScale(2.0);
 
     // player inputs
     this.spaceKey =
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     this.aKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.dKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-    my.sprite.body = this.add.sprite(this.bodyX, this.bodyY, "body")
-    my.sprite.attack = this.add.sprite(this.bodyX, this.bodyY, "attack")
+    my.sprite.body = this.add.sprite(this.bodyX, this.bodyY, "tank");
+    my.sprite.attack = this.add.sprite(this.bodyX, this.bodyY, "playerShot");
     my.sprite.attack.visible = false;
 
     this.spaceKey.on('down', () => {
